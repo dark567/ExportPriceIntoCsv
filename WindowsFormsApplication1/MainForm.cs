@@ -87,7 +87,7 @@ namespace ExportPriceFor1C
                 //}
                 //else
                 //{
-                    FileName = $"Report_2_{DateTime.Now.ToString("dd-mm-yyyy")}";
+                    FileName = $"Report_2_{DateTime.Now.ToString("dd-MM-yyyy")}";
                     label8_Click(sender, e);
                     if (!string.IsNullOrEmpty(textBox2.Text))
                     {
@@ -124,7 +124,7 @@ namespace ExportPriceFor1C
                 //}
                 //else
                 //{
-                    FileName = $"Report_3_{DateTime.Now.ToString("dd-mm-yyyy")}";
+                    FileName = $"Report_3_{DateTime.Now.ToString("dd-MM-yyyy")}";
                     label8_Click(sender, e);
                     if (!string.IsNullOrEmpty(textBox2.Text))
                     {
@@ -354,10 +354,10 @@ namespace ExportPriceFor1C
                     var nameGroup = dataRow[1].ToString(); // 2
                     var idGoods = dataRow[2].ToString(); // 3
                     var nameGoods = dataRow[3].ToString(); // 4
-                    var typeGoods = dataRow[3].ToString(); // 5
-                    var priceGoods = dataRow[3].ToString(); // 6
-                    var idSost = dataRow[3].ToString(); // 7
-                    var codeGoods = dataRow[3].ToString(); // 8
+                    var typeGoods = dataRow[4].ToString(); // 5
+                    var priceGoods = dataRow[5].ToString(); // 6
+                    var idSost = dataRow[6].ToString(); // 7
+                    var codeGoods = dataRow[7].ToString(); // 8
 
                     var line = string.Format($"{idGroup};{nameGroup};{idGoods};{nameGoods};{typeGoods};{priceGoods};{idSost};{codeGoods}");
                     w.WriteLine(line);
@@ -391,7 +391,7 @@ namespace ExportPriceFor1C
                     var idGoods = dataRow[2].ToString(); // 3
                     var nameGoods = dataRow[3].ToString(); // 4
                     var priceGoods = dataRow[4].ToString(); // 5
-                    var pricePrice = dataRow[4].ToString(); // 6
+                    var pricePrice = dataRow[5].ToString(); // 6
 
                     var line = string.Format($"{idPriceList};{namePrice};{idGoods};{nameGoods};{priceGoods};{pricePrice}");
                     w.WriteLine(line);
