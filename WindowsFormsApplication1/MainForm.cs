@@ -350,11 +350,16 @@ namespace ExportPriceFor1C
 
                 foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null, 2).AsEnumerable().ToList())
                 {
-                    var first = dataRow[0].ToString(); // 
-                    var second = dataRow[1].ToString(); //
-                    var third = dataRow[2].ToString(); //
-                    var fourth = dataRow[3].ToString(); //
-                    var line = string.Format($"{first};{second};{third};{fourth}");
+                    var idGroup = dataRow[0].ToString(); // 1
+                    var nameGroup = dataRow[1].ToString(); // 2
+                    var idGoods = dataRow[2].ToString(); // 3
+                    var nameGoods = dataRow[3].ToString(); // 4
+                    var typeGoods = dataRow[3].ToString(); // 5
+                    var priceGoods = dataRow[3].ToString(); // 6
+                    var idSost = dataRow[3].ToString(); // 7
+                    var codeGoods = dataRow[3].ToString(); // 8
+
+                    var line = string.Format($"{idGroup};{nameGroup};{idGoods};{nameGoods};{typeGoods};{priceGoods};{idSost};{codeGoods}");
                     w.WriteLine(line);
                     w.Flush();
                     count++;
@@ -381,13 +386,14 @@ namespace ExportPriceFor1C
 
                 foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null, 3).AsEnumerable().ToList())
                 {
-                    var first = dataRow[0].ToString(); // 
-                    var second = dataRow[1].ToString(); //
-                    var third = dataRow[2].ToString(); //
-                    var fourth = dataRow[3].ToString(); //
-                    var five = dataRow[4].ToString(); //
+                    var idPriceList = dataRow[0].ToString(); // 1
+                    var namePrice = dataRow[1].ToString(); // 2
+                    var idGoods = dataRow[2].ToString(); // 3
+                    var nameGoods = dataRow[3].ToString(); // 4
+                    var priceGoods = dataRow[4].ToString(); // 5
+                    var pricePrice = dataRow[4].ToString(); // 6
 
-                    var line = string.Format($"{first};{second};{third};{fourth};{five}");
+                    var line = string.Format($"{idPriceList};{namePrice};{idGoods};{nameGoods};{priceGoods};{pricePrice}");
                     w.WriteLine(line);
                     w.Flush();
                     count++;
