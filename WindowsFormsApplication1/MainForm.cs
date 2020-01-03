@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ExportPriceFor1C
@@ -36,6 +37,7 @@ namespace ExportPriceFor1C
                 //MessageBox.Show(OPF.FileName);
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -87,14 +89,14 @@ namespace ExportPriceFor1C
                 //}
                 //else
                 //{
-                    FileName = $"Report_2_{DateTime.Now.ToString("dd-MM-yyyy")}";
-                    label8_Click(sender, e);
-                    if (!string.IsNullOrEmpty(textBox2.Text))
-                    {
-                        res = WorkWithReport2();
-                    }
-                    
-               // }
+                FileName = $"Report_2_{DateTime.Now.ToString("dd-MM-yyyy")}";
+                label8_Click(sender, e);
+                if (!string.IsNullOrEmpty(textBox2.Text))
+                {
+                    res = WorkWithReport2();
+                }
+
+                // }
                 if (res != 0) MessageBox.Show($"Выгрузка успешно {res}");
                 else MessageBox.Show($"Выгрузка отмена {res}");
             }
@@ -124,14 +126,14 @@ namespace ExportPriceFor1C
                 //}
                 //else
                 //{
-                    FileName = $"Report_3_{DateTime.Now.ToString("dd-MM-yyyy")}";
-                    label8_Click(sender, e);
-                    if (!string.IsNullOrEmpty(textBox2.Text))
-                    {
-                        res = WorkWithReport3();
-                    }
-                    
-               // }
+                FileName = $"Report_3_{DateTime.Now.ToString("dd-MM-yyyy")}";
+                label8_Click(sender, e);
+                if (!string.IsNullOrEmpty(textBox2.Text))
+                {
+                    res = WorkWithReport3();
+                }
+
+                // }
                 if (res != 0) MessageBox.Show($"Выгрузка успешно {res}");
                 else MessageBox.Show($"Выгрузка отмена {res}");
             }
@@ -222,7 +224,8 @@ namespace ExportPriceFor1C
                         "end as TYPE_GOODS " +
                         ",case when(dg.PRICE_OUT is null) then 0 else dg.PRICE_OUT end as PRICE_GOODS " +
                         ",0 as ID_SOST " +
-                        ",dg.code as CODE_GOODS " +
+                        // ",dg.code as CODE_GOODS " +
+                        ",case when(dg.code is null) then 0 else dg.code end as CODE_GOODS " +
                         "from dic_goods dg " +
                         "join DIC_GOODS_GRP dgg on dg.GRP_ID = dgg.ID " +
                         "where DG.IS_SERVICE = 1 and DG.IS_ACTIVE = 1 and dgg.id <> '189' " +
@@ -265,7 +268,8 @@ namespace ExportPriceFor1C
                         "and dg.id = '65' then DG.ID " +
                         "else 0 " +
                         "end as ID_SOST " +
-                        ",dg1.code as CODE_GOODS " +
+                        ",case when(dg1.code is null) then 0 else dg1.code end as CODE_GOODS " +
+                        //",dg1.code as CODE_GOODS " +
                         "from dic_goods dg " +
                         "join DIC_GOODS_GRP dgg on dg.GRP_ID = dgg.ID " +
                         "left " +
@@ -339,11 +343,14 @@ namespace ExportPriceFor1C
         private int WorkWithReport2()
         {
             int count = 0;
-            using (var w = new StreamWriter(textBox2.Text))
+
+            using (var w = new StreamWriter(new FileStream(textBox2.Text, FileMode.OpenOrCreate, FileAccess.ReadWrite), Encoding.UTF8))
+            // using (var w = new StreamWriter(textBox2.Text))
             {
                 foreach (DataColumn column in PriceTabel(fb, null, null, null, null, 2).Columns)
                 {
-                    w.Write($"{column.ColumnName};");
+                    if (column.Ordinal < 7) w.Write($"{column.ColumnName};");
+                    else w.Write($"{column.ColumnName}");
                     count++;
                 }
                 w.Write("\n");
@@ -375,11 +382,13 @@ namespace ExportPriceFor1C
         private int WorkWithReport3()
         {
             int count = 0;
-            using (var w = new StreamWriter(textBox2.Text))
+            using (var w = new StreamWriter(new FileStream(textBox2.Text, FileMode.OpenOrCreate, FileAccess.ReadWrite), Encoding.UTF8))
+            //using (var w = new StreamWriter(textBox2.Text))
             {
                 foreach (DataColumn column in PriceTabel(fb, null, null, null, null, 3).Columns)
                 {
-                    w.Write($"{column.ColumnName};");
+                    if (column.Ordinal < 5) w.Write($"{column.ColumnName};");
+                    else w.Write($"{column.ColumnName}");
                     count++;
                 }
                 w.Write("\n");
