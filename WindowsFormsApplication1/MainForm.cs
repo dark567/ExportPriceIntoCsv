@@ -28,7 +28,8 @@ namespace ExportPriceFor1C
 
             string date = crypto.GetDecodeKey("keyfile.dat").Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
 
-            if (DateTime.Parse(date) < DateTime.Now) Close();
+            if (DateTime.Parse(date) <= DateTime.Now) Close();
+            this.Text = this.Text + "......." + date;
         }
 
         /// <summary>
