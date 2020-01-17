@@ -10,13 +10,25 @@ namespace ExportPriceFor1C
 {
     public partial class MainForm : Form
     {
-        FbConnection fb; //fb ссылается на соединение с нашей базой данных, по-этому она должна быть доступна всем методам нашего класса
+        FbConnection fb; //fb ссылается на соединение с нашей базой данных, поэтому она должна быть доступна всем методам нашего класса
         public string path_db;
         public string FileName;
 
         public MainForm()
         {
             InitializeComponent();
+
+            this.Load += new EventHandler(Form1_Load);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            CryptoClass crypto = new CryptoClass();
+            if (!crypto.Form_LoadTrue()) Close();
+
+            string date = crypto.GetDecodeKey("keyfile.dat").Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
+
+            if (DateTime.Parse(date) < DateTime.Now) Close();
         }
 
         /// <summary>
