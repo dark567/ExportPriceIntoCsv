@@ -24,7 +24,7 @@ namespace ExportPriceFor1C
         private void Form1_Load(object sender, EventArgs e)
         {
             CryptoClass crypto = new CryptoClass();
-            if (!crypto.Form_LoadTrue()) Close();
+           // if (!crypto.Form_LoadTrue()) Close();
 
             string date = crypto.GetDecodeKey("keyfile.dat").Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
 

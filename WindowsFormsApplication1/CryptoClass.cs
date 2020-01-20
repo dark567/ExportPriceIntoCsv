@@ -36,21 +36,7 @@ namespace ExportPriceFor1C
             }
             return MotherBoardID;
         }
-        //Метод для получения ProcessorID
-        //string GetProcessorID()
-        //{
-        //    string ProcessorID = string.Empty;
-        //    SelectQuery query = new SelectQuery("Win32_processor");
-        //    ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-        //    ManagementObjectCollection.ManagementObjectEnumerator enumerator = searcher.Get().GetEnumerator();
-        //    while (enumerator.MoveNext())
-        //    {
-        //        ManagementObject info = (ManagementObject)enumerator.Current;
-        //        ProcessorID = info["processorId"].ToString().Trim();
-        //    }
-        //    return ProcessorID;
-        //}
-        //Метод для получения VolumeSerial("C:\")
+
         string GetVolumeSerial(string strDriveLetter = "C")
         {
             ManagementObject VolumeSerial = new ManagementObject(string.Format("win32_logicaldisk.deviceid=\"{0}:\"", strDriveLetter));
@@ -87,7 +73,20 @@ namespace ExportPriceFor1C
                                 "Данные скопированы в буфер обмена" + "\n" +
                                 "Сообщите их разработчику для получения файла ключа!",
                                 "Регистрация");
-                Clipboard.SetText(number);
+                try
+                {
+                    Clipboard.SetText(number);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Ошибка записи в буфер",
+                    "Error",MessageBoxButtons.OK,MessageBoxIcon.Warning // for Warning  
+                           //MessageBoxIcon.Error // for Error 
+                           //MessageBoxIcon.Information  // for Information
+                           //MessageBoxIcon.Question // for Question
+                           );
+                }
+
                 return false;
             }
 
