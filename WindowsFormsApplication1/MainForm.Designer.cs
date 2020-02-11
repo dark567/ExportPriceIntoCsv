@@ -36,6 +36,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,9 +51,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(10, 39);
+            this.button1.Location = new System.Drawing.Point(123, 39);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(147, 40);
+            this.button1.Size = new System.Drawing.Size(110, 40);
             this.button1.TabIndex = 6;
             this.button1.Text = "Выгрузить 2";
             this.button1.UseVisualStyleBackColor = true;
@@ -60,9 +61,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(316, 39);
+            this.button2.Location = new System.Drawing.Point(355, 39);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(144, 40);
+            this.button2.Size = new System.Drawing.Size(110, 40);
             this.button2.TabIndex = 7;
             this.button2.Text = "Отмена";
             this.button2.UseVisualStyleBackColor = true;
@@ -100,6 +101,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.label7);
@@ -115,13 +117,23 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(163, 39);
+            this.button3.Location = new System.Drawing.Point(239, 39);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(147, 40);
+            this.button3.Size = new System.Drawing.Size(110, 40);
             this.button3.TabIndex = 14;
             this.button3.Text = "Выгрузить 3";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(7, 39);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(110, 40);
+            this.button4.TabIndex = 15;
+            this.button4.Text = "Выгрузить 1";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
             // MainForm
             // 
@@ -149,5 +161,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }

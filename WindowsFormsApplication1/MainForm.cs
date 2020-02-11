@@ -24,10 +24,12 @@ namespace ExportPriceFor1C
         private void Form1_Load(object sender, EventArgs e)
         {
             CryptoClass crypto = new CryptoClass();
-           // if (!crypto.Form_LoadTrue()) Close();
+            // if (!crypto.Form_LoadTrue()) Close();
 
             string date = crypto.GetDecodeKey("keyfile.dat").Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
 
+            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
+            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
             if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
             this.Text = this.Text + "......." + date;
         }
@@ -215,6 +217,8 @@ namespace ExportPriceFor1C
             if (string.IsNullOrEmpty(REFRESH_ID)) { REFRESH_ID = "null"; }
             if (string.IsNullOrEmpty(IN_ORG_ID)) { IN_ORG_ID = "null"; }
 
+            string query1 = "select id as ID_GROUP, name as NAME_GROUP, PARENT_ID  from DIC_GOODS_GRP  where id <> '0' order by 2";
+
             string query2 = "select  dgg.ID as ID_GROUP /*id группы*/ " +
                         ", dgg.name as NAME_GROUP   /*имя группы*/ " +
                         ",dg.ID as ID_GOODS      /*id goods*/ " +
@@ -321,7 +325,7 @@ namespace ExportPriceFor1C
                            "where S.PRICE_OUT <> 0 and s.is_service = 1 and s.is_active = 1";
 
             // MessageBox.Show($"{query}");
-            FbCommand cmd = new FbCommand(type == 2 ? query2 : query3, conn);
+            FbCommand cmd = new FbCommand(type == 1 ? query1 : type == 2 ? query2 : query3, conn);
 
             try
             {
@@ -422,6 +426,62 @@ namespace ExportPriceFor1C
                 }
             }
             return count;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private int WorkWithReport1()
+        {
+            int count = 0;
+            using (var w = new StreamWriter(new FileStream(textBox2.Text, FileMode.OpenOrCreate, FileAccess.ReadWrite), Encoding.UTF8))
+            //using (var w = new StreamWriter(textBox2.Text))
+            {
+                foreach (DataColumn column in PriceTabel(fb, null, null, null, null, 1).Columns)
+                {
+                    if (column.Ordinal < 5) w.Write($"{column.ColumnName};");
+                    else w.Write($"{column.ColumnName}");
+                    count++;
+                }
+                w.Write("\n");
+
+                foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null, 1).AsEnumerable().ToList())
+                {
+                    var ID_GROUP = dataRow[0].ToString(); // 1
+                    var NAME_GROUP = dataRow[1].ToString(); // 2
+                    var ID_PARANTS = dataRow[2].ToString(); // 3
+
+                    var line = string.Format($"{ID_GROUP};{NAME_GROUP};{ID_PARANTS}");
+                    w.WriteLine(line);
+                    w.Flush();
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            int res = 0;
+            fb = GetConnection();
+            try
+            {
+                PriceTabel(fb, null, null, null, null, 1);
+                FileName = $"Report_1_{DateTime.Now.ToString("dd-MM-yyyy")}";
+                label8_Click(sender, e);
+                if (!string.IsNullOrEmpty(textBox2.Text))
+                {
+                    res = WorkWithReport1();
+                }
+
+                // }
+                if (res != 0) MessageBox.Show($"Выгрузка успешно {res}");
+                else MessageBox.Show($"Выгрузка отмена {res}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Выгрузка неудачно {ex.Message}");
+            }
         }
     }
 }
