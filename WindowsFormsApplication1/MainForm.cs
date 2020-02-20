@@ -23,14 +23,18 @@ namespace ExportPriceFor1C
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            LicensyaCheck();
+        }
+
+        private void LicensyaCheck()
+        {
+            string curFile = @"keyfile.dat";
+            if (!File.Exists(curFile)) Close();
+
             CryptoClass crypto = new CryptoClass();
-            // if (!crypto.Form_LoadTrue()) Close();
+            string date = crypto.GetDecodeKey(curFile).Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
+            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
 
-            string date = crypto.GetDecodeKey("keyfile.dat").Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
-
-            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
-            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
-            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
             this.Text = this.Text + "......." + date;
         }
 
@@ -91,6 +95,8 @@ namespace ExportPriceFor1C
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            LicensyaCheck();
+
             int res = 0;
             fb = GetConnection();
             try
@@ -128,6 +134,8 @@ namespace ExportPriceFor1C
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
+            LicensyaCheck();
+
             int res = 0;
             fb = GetConnection();
             try
@@ -462,6 +470,8 @@ namespace ExportPriceFor1C
 
         private void Button4_Click(object sender, EventArgs e)
         {
+            LicensyaCheck();
+
             int res = 0;
             fb = GetConnection();
             try
