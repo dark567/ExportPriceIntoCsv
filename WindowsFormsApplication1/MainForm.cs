@@ -30,12 +30,22 @@ namespace ExportPriceFor1C
         {
             string curFile = @"keyfile.dat";
             if (!File.Exists(curFile)) Close();
-
-            CryptoClass crypto = new CryptoClass();
-            string date = crypto.GetDecodeKey(curFile).Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
-            if (DateTime.Parse(date).AddDays(1) <= DateTime.Now) Close();
-
-            this.Text = this.Text + "......." + date;
+            else
+            {
+                CryptoClass crypto = new CryptoClass();
+                string date = crypto.GetDecodeKey(curFile).Substring(crypto.GetDecodeKey("keyfile.dat").IndexOf("|") + 1);
+                if (DateTime.Parse(date).AddDays(1) <= DateTime.Now)
+                    try
+                    {
+                        if (File.Exists(curFile))
+                            File.Delete(curFile);
+                    }
+                    catch (IOException) { }
+                    finally
+                    { Close(); }
+                this.Text = this.Text + "......." + date;
+            }
+            
         }
 
         /// <summary>
@@ -249,11 +259,16 @@ namespace ExportPriceFor1C
                         "end as TYPE_GOODS " +
                         ",case when(dg.PRICE_OUT is null) then 0 else dg.PRICE_OUT end as PRICE_GOODS " +
                         ",0 as ID_SOST " +
-                        // ",dg.code as CODE_GOODS " +
                         ",case when(dg.code is null) then 0 else dg.code end as CODE_GOODS " +
+                        ",case when(dg.descr is null) then '' else dg.descr end as DESCR " +
+                        ",case when(dg.DAYS_FROM_GET is null) then 0 else dg.DAYS_FROM_GET end as DAYS_FROM_GET " +
+                        ",case when(dbt.name is null) then '' else dbt.name end as BULB_NUM " +
+                        ",case when(dd.val is null) then '' else dd.val end as MATERIAL " +
                         "from dic_goods dg " +
                         "join DIC_GOODS_GRP dgg on dg.GRP_ID = dgg.ID " +
-                        "where DG.IS_SERVICE = 1 and DG.IS_ACTIVE = 1 and dgg.id <> '189' " +
+                        "left join DIC_BULB_TYPES dbt on dbt.id = dg.bulb_num_id " +
+                        "left join DIC_DICS dd on dd.id = dg.material_id " +
+                        "where DG.IS_SERVICE = 1 and DG.IS_ACTIVE = 1 and dgg.id <> '189' and dg.price_out > 0 " +
                         "union " +
                         "/*part 2*/ " +
                         "select dgg1.ID as ID_GROUP      /*id группы*/ " +
@@ -294,6 +309,10 @@ namespace ExportPriceFor1C
                         "else 0 " +
                         "end as ID_SOST " +
                         ",case when(dg1.code is null) then 0 else dg1.code end as CODE_GOODS " +
+                        ",case when(dg1.descr is null) then '' else dg1.descr end as DESCR " +
+                        ",case when(dg1.DAYS_FROM_GET is null) then 0 else dg1.DAYS_FROM_GET end as DAYS_FROM_GET " +
+                        ",case when(dbt.name is null) then '' else dbt.name end as BULB_NUM " +
+                        ",case when(dd.val is null) then '' else dd.val end as MATERIAL " +
                         //",dg1.code as CODE_GOODS " +
                         "from dic_goods dg " +
                         "join DIC_GOODS_GRP dgg on dg.GRP_ID = dgg.ID " +
@@ -301,6 +320,8 @@ namespace ExportPriceFor1C
                         "join DIC_CALCULATIONS dc on dc.hd_id = dg.id and dc.IS_AUTO_ADD = 0 " +
                         "left join dic_goods dg1 on dg1.id = dc.goods_id " +
                         "left join DIC_GOODS_GRP dgg1 on dg1.GRP_ID = dgg1.ID " +
+                        "left join DIC_BULB_TYPES dbt on dbt.id = dg1.bulb_num_id " +
+                        "left join DIC_DICS dd on dd.id = dg1.material_id " +
                         "where DG.IS_SERVICE = 1 and DG.IS_ACTIVE = 1 and dgg.id <> '189' " +
                         "and((case " +
                         "when dc.IS_AUTO_ADD = 1 then(select RESULT " +
@@ -323,13 +344,19 @@ namespace ExportPriceFor1C
                         "where C.HD_ID = DG.ID) and dg.id = '65')) " +
                         "order by 7,3";
 
-            string query3 = "select dtp.id as ID_TYPEPRICE, dtp.name as NAME_TYPEPRICE, S.ID as ID_GOODS, S.NAME as NAME_GOODS, S.PRICE_OUT as PRICE_GOODS,/* P.DISCONT_PRC,*/ " +
-                           "P.PRICE_OUT_DISC as PRICE_TYPEPRICE " +
+            string query3 = "select dtp.id as ID_TYPEPRICE, dtp.name as NAME_TYPEPRICE, S.ID as ID_GOODS, S.NAME as NAME_GOODS, S.PRICE_OUT as PRICE_GOODS," +
+                           "P.PRICE_OUT_DISC as PRICE_TYPEPRICE" +
+                           ",case when(S.descr is null) then '' else S.descr end as DESCR " +
+                           ",case when(S.DAYS_FROM_GET is null) then 0 else S.DAYS_FROM_GET end as DAYS_FROM_GET " +
+                           ",case when(dbt.name is null) then '' else dbt.name end as BULB_NUM " +
+                           ",case when(dd.val is null) then '' else dd.val end as MATERIAL " +
                            "from DIC_GOODS S " +
                            "join DIC_PRICE_LIST P on P.GOOD_ID = S.ID " +
                            "join dic_type_prices dtp on dtp.id = P.TYPE_PRICE_ID and exists(select first 1 DOO.Id " +
                            "from dic_org DOO " +
                            "where doo.type_price_id = dtp.id) " +
+                           "left join DIC_BULB_TYPES dbt on dbt.id = S.bulb_num_id " +
+                           "left join DIC_DICS dd on dd.id = S.material_id " +
                            "where S.PRICE_OUT <> 0 and s.is_service = 1 and s.is_active = 1";
 
             // MessageBox.Show($"{query}");
@@ -374,7 +401,7 @@ namespace ExportPriceFor1C
             {
                 foreach (DataColumn column in PriceTabel(fb, null, null, null, null, 2).Columns)
                 {
-                    if (column.Ordinal < 7) w.Write($"{column.ColumnName};");
+                    if (column.Ordinal < 11) w.Write($"{column.ColumnName};");
                     else w.Write($"{column.ColumnName}");
                     count++;
                 }
@@ -390,8 +417,12 @@ namespace ExportPriceFor1C
                     var priceGoods = dataRow[5].ToString(); // 6
                     var idSost = dataRow[6].ToString(); // 7
                     var codeGoods = dataRow[7].ToString(); // 8
+                    var DESCR = dataRow[8].ToString(); // 9
+                    var DAYS_FROM_GET = dataRow[9].ToString(); // 10
+                    var BULB_NUM = dataRow[10].ToString(); // 11
+                    var MATERIAL = dataRow[11].ToString(); // 12
 
-                    var line = string.Format($"{idGroup};{nameGroup};{idGoods};{nameGoods};{typeGoods};{priceGoods};{idSost};{codeGoods}");
+                    var line = string.Format($"{idGroup};{nameGroup};{idGoods};{nameGoods};{typeGoods};{priceGoods};{idSost};{codeGoods};{DESCR};{DAYS_FROM_GET};{BULB_NUM};{MATERIAL}");
                     w.WriteLine(line);
                     w.Flush();
                     count++;
@@ -412,7 +443,7 @@ namespace ExportPriceFor1C
             {
                 foreach (DataColumn column in PriceTabel(fb, null, null, null, null, 3).Columns)
                 {
-                    if (column.Ordinal < 5) w.Write($"{column.ColumnName};");
+                    if (column.Ordinal < 9) w.Write($"{column.ColumnName};");
                     else w.Write($"{column.ColumnName}");
                     count++;
                 }
@@ -420,14 +451,18 @@ namespace ExportPriceFor1C
 
                 foreach (DataRow dataRow in PriceTabel(fb, null, null, null, null, 3).AsEnumerable().ToList())
                 {
-                    var idPriceList = dataRow[0].ToString(); // 1
-                    var namePrice = dataRow[1].ToString(); // 2
-                    var idGoods = dataRow[2].ToString(); // 3
-                    var nameGoods = dataRow[3].ToString(); // 4
-                    var priceGoods = dataRow[4].ToString(); // 5
-                    var pricePrice = dataRow[5].ToString(); // 6
+                    var idPriceList = dataRow[0].ToString(); // 0
+                    var namePrice = dataRow[1].ToString(); // 1
+                    var idGoods = dataRow[2].ToString(); // 2
+                    var nameGoods = dataRow[3].ToString(); // 3
+                    var priceGoods = dataRow[4].ToString(); // 4
+                    var pricePrice = dataRow[5].ToString(); // 5
+                    var DESCR = dataRow[6].ToString(); // 6
+                    var DAYS_FROM_GET = dataRow[7].ToString(); // 7
+                    var BULB_NUM = dataRow[8].ToString(); // 8
+                    var MATERIAL = dataRow[9].ToString(); // 9
 
-                    var line = string.Format($"{idPriceList};{namePrice};{idGoods};{nameGoods};{priceGoods};{pricePrice}");
+                    var line = string.Format($"{idPriceList};{namePrice};{idGoods};{nameGoods};{priceGoods};{pricePrice};{DESCR};{DAYS_FROM_GET};{BULB_NUM};{MATERIAL}");
                     w.WriteLine(line);
                     w.Flush();
                     count++;

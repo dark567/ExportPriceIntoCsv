@@ -20,10 +20,10 @@ namespace ExportPriceFor1C
         }
     }
     static class db_puth
-        {
-            public static string Value { get; set; }
-        }
+    {
+        public static string Value { get; set; }
+    }
 
 
-    
+
 }

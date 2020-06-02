@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Management;
+using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace ExportPriceFor1C
 {
